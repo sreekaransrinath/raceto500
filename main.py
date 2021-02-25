@@ -42,14 +42,11 @@ def get_followers(user):
     follower_count = driver.find_element_by_xpath(
         "/html/body/div/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div[1]/div/div[5]/div[2]/a/span[1]/span"
     ).text
-    name = driver.find_element_by_xpath(
-        "/html/body/div/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/div[1]/div[2]/div[2]/div/div/div[1]/div/span[1]/span"
-    ).text
-    return update_slack(name.strip(), follower_count)
+    return update_slack(user.strip(), follower_count)
 
 
 def update_slack(user, follower_count):
-    message = f"{user} has {follower_count} followers."
+    message = f"@{user} has {follower_count} followers."
     response = requests.post(
         webhook_url,
         data=json.dumps({"text": message}),
