@@ -2,7 +2,7 @@ from selenium import webdriver
 from time import sleep
 import json
 import requests
-from variables import accountpassword, accountusername, webhook_url
+from variables import webhook_url
 from selenium.webdriver.chrome.options import Options
 
 options = Options()
@@ -15,29 +15,6 @@ total_group_growth = 0
 
 with open('tracker.json') as json_file:
     tracker = json.load(json_file)
-
-
-def login(user, pw):
-    driver.get("https://twitter.com")
-    sleep(1)
-    login_btn = driver.find_element_by_xpath(
-        "/html/body/div/div/div/div/main/div/div/div/div[1]/div/div[3]/a[2]"
-    )
-    login_btn.click()
-    sleep(1)
-    user_field = driver.find_element_by_name("session[username_or_email]")
-    pass_field = driver.find_element_by_name("session[password]")
-    user_field.click()
-    sleep(1)
-    user_field.send_keys(user)
-    sleep(1)
-    pass_field.click()
-    pass_field.send_keys(pw)
-    sleep(1)
-    submit_btn = driver.find_element_by_xpath(
-        "/html/body/div/div/div/div[2]/main/div/div/div[2]/form/div/div[3]/div"
-    )
-    submit_btn.click()
 
 
 def get_followers(user):
@@ -66,10 +43,9 @@ def update_slack(user, follower_count, growth):
             "Request to slack returned an error %s, the response is:\n%s"
             % (response.status_code, response.text)
         )
+    print(message)
 
 
-login(accountusername, accountpassword)
-lines = open("users.txt", "r").readlines()
 for key in tracker.keys():
     get_followers(key)
     sleep(2)
