@@ -2,9 +2,9 @@ from selenium import webdriver
 from time import sleep
 import json
 import requests
-from variables import webhook_url
+from variables import slack_webhook_url, discord_webhook_url
 from selenium.webdriver.chrome.options import Options
-
+from datetime import datetime as dt
 options = Options()
 options.headless = True
 driver = webdriver.Chrome(
@@ -34,7 +34,7 @@ def get_followers(user):
 def update_slack(user, follower_count, growth):
     message = f"@{user} has {follower_count} followers, up {growth} followers from {tracker[user][-2]} yesterday."
     response = requests.post(
-        webhook_url,
+        slack_webhook_url,
         data=json.dumps({"text": message}),
         headers={"Content-Type": "application/json"},
     )
@@ -53,11 +53,14 @@ for key in tracker.keys():
 # Update the webhook with Total Group Growth
 message = f"In total, the group has grown by {total_group_growth} followers in the last 24 hours."
 response = requests.post(
-    webhook_url,
+    slack_webhook_url,
     data=json.dumps({"text": message}),
     headers={"Content-Type": "application/json"},
 )
 
+# Discord cron job update via webhook
+requests.post(discord_webhook_url, data={
+              'content': f'Ran Twitter Follower Updates Slack Bot at {dt.now().strftime("%I:%M:%S %p")} on {dt.now().strftime("%A, %-d %b %Y")}'})
 
 with open('tracker.json', 'w') as outfile:
     json.dump(tracker, outfile)
